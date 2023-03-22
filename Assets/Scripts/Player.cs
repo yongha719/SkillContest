@@ -1,7 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -27,8 +25,22 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
-        transform.Translate(new Vector2(Input.GetAxisRaw("Horizontal"), 0) * Time.deltaTime * speed);
-        transform.position = new Vector2(Mathf.Clamp(transform.position.x, -5, 5), -4);
+        transform.Translate(new Vector2(Input.GetAxisRaw("Horizontal"), 0) * Time.unscaledDeltaTime * speed);
+        transform.position = new Vector2(Mathf.Clamp(transform.position.x, -5.5f, 5.5f), -3);
+    }
+
+    // 도망가는 스킬
+    IEnumerator Run()
+    {
+        for (float Zangle = 0f; Zangle != 1f; Zangle += 0.01f)
+        {
+            Camera.main.transform.Rotate(0, 0, Zangle);
+        }
+
+        yield return new WaitForSeconds(10f);
+
+
+
     }
 
     private void Reset()
