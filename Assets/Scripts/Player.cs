@@ -33,11 +33,19 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
-        transform.Translate(new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")) * Time.unscaledDeltaTime * speed);
-        transform.position = new Vector3(Mathf.Clamp(transform.position.x, -5.5f, 5.5f), 0, Mathf.Clamp(transform.position.y, -1.5f, 3f));
+        transform.Translate(new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")) * Time.deltaTime * speed, Space.World);
+        transform.position = new Vector3(Mathf.Clamp(transform.position.x, -5.5f, 5.5f), 0, Mathf.Clamp(transform.position.z, -1.5f, 3f));
     }
 
-
+    void CircleAttack()
+    {
+        for (int i = 0; i < 20; i++)
+        {
+            float angle = i * Mathf.PI * 2 / 20;
+            float x = Mathf.Cos(angle) * 5f;
+            float y = Mathf.Sin(angle) * 5f;
+        }
+    }
 
     // 도망가는 스킬
     IEnumerator Run()
