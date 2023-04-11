@@ -1,66 +1,347 @@
 using System.Collections;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
+    private bool IsInvisible;
+    public const float MaxHp = 100f;
+
     [SerializeField]
-    private float speed = 10f;
-    public float Speed
+    private float hp = MaxHp;
+    public float Hp
     {
         get
         {
-            return speed;
+            return hp;
         }
 
         set
         {
-            speed = value;
+            if (IsInvisible && value < hp)
+                return;
+
+            if (value <= 0)
+            {
+                IsDie = true;
+            }
+
+
+
+            hp = value;
+
+            if (hp > MaxHp)
+                hp = MaxHp;
+
+            hpSlider.value = hp;
         }
+    }
+
+    public const float Maxfuel = 50f;
+
+    [SerializeField]
+    private float fuel = Maxfuel;
+    public float Fuel
+    {
+        get
+        {
+            return fuel;
+        }
+
+        set
+        {
+            if (value <= 0)
+            {
+                IsDie = true;
+            }
+
+            fuel = value;
+
+            if (fuel > Maxfuel)
+                fuel = Maxfuel;
+
+            fuelSlider.value = fuel;
+        }
+    }
+
+    [SerializeField]
+    private float Speed = 15f;
+
+    private bool CanAttack => IsDie == false && ComingBoss == false;
+    public bool IsDie;
+    public bool ComingBoss;
+
+
+    [SerializeField]
+    private GameObject playerBullet;
+
+    [SerializeField]
+    private Slider hpSlider;
+    [SerializeField]
+    private Slider fuelSlider;
+
+    [SerializeField]
+    private FillImage FixSkillImage;
+    [SerializeField]
+    private FillImage BoomSkillImage;
+    [SerializeField]
+    private FillImage SlowEnemyBulletSkillImage;
+
+    [SerializeField]
+    private GameObject WarningText;
+
+    [SerializeField]
+    AudioClip ShootSound;
+
+    [SerializeField]
+    AudioSource AudioSource;
+
+    private float Damage = 6f;
+    private WaitForSeconds AttackDelay => new WaitForSeconds(0.15f);
+    private WaitKeyDown WaitPressAttackKey => new WaitKeyDown(KeyCode.Z);
+
+
+    private float HealHp = 15f;
+    private float FixSkillcurtime;
+    private float FixSkillDelay = 9f;
+    private WaitKeyDown WaitPressFixSkillKey => new WaitKeyDown(KeyCode.X);
+
+
+    private float BoomSkillDamage = 15f;
+    private float BoomSkillCurtime;
+    private float BoomSkillDelay = 7f;
+    private WaitKeyDown WaitPressBoomSkillKey => new WaitKeyDown(KeyCode.C);
+
+
+    private float SlowScale = 0.5f;
+    private float SlowBulletSkillCurtime;
+    private float SlowBulletSkillDelay = 10f;
+    private WaitForSeconds BackOriginalSpeedDelay => new WaitForSeconds(2.5f);
+    private WaitKeyDown WaitPressSlowBulletSkillKey => new WaitKeyDown(KeyCode.LeftShift);
+
+    const float MAX_POWERUP = 4f;
+    float powerupCount = 0;
+
+    const float InvisibleTime = 2f;
+    float curInvisibleTime = 0;
+
+    private void Awake()
+    {
+        Utility.Player = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     void Start()
     {
+        StartCoroutine(EBasicAttack());
 
+        InitSkill();
+        SKillsCoroutine();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
+        transform.Translate(new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")) * Time.deltaTime * Speed, Space.World);
+        transform.position = new Vector3(Mathf.Clamp(transform.position.x, -10f, 10f), 0, Mathf.Clamp(transform.position.z, -0.5f, 8f));
+    }
 
+    public void MaxPowerup()
+    {
+        powerupCount = MAX_POWERUP;
+    }
+
+    IEnumerator EBasicAttack()
+    {
+        while (true)
+        {
+            yield return null;
+
+            if (CanAttack == false)
+                continue;
+
+
+            yield return AttackDelay;
+            yield return WaitPressAttackKey;
+
+            // ÃÑ¾Ë¹ß»ç
+            Instantiate(playerBullet, transform.position, playerBullet.transform.rotation);
+            AudioSource.PlayOneShot(ShootSound);
         }
     }
 
-    void FixedUpdate()
+    void SKillsCoroutine()
     {
-        transform.Translate(new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")) * Time.deltaTime * speed, Space.World);
-        transform.position = new Vector3(Mathf.Clamp(transform.position.x, -5.5f, 5.5f), 0, Mathf.Clamp(transform.position.z, -1.5f, 3f));
+        StartCoroutine(EFixSkill());
+        StartCoroutine(EBoomSkill());
+        StartCoroutine(ESlowEnemyBulletSkill());
     }
 
-    void CircleAttack()
+    public void InitSkill()
     {
-        for (int i = 0; i < 20; i++)
-        {
-            float angle = i * Mathf.PI * 2 / 20;
-            float x = Mathf.Cos(angle) * 5f;
-            float y = Mathf.Sin(angle) * 5f;
-        }
+        FixSkillcurtime = FixSkillDelay;
+        FixSkillImage.StopFill();
+
+        BoomSkillCurtime = BoomSkillDelay;
+
+        SlowBulletSkillCurtime = SlowBulletSkillDelay;
     }
 
-    // µµ¸Á°¡´Â ½ºÅ³
-    IEnumerator Run()
+    IEnumerator EFixSkill()
     {
-        for (float Zangle = 0f; Zangle != 1f; Zangle += 0.01f)
+        while (true)
         {
-            Camera.main.transform.Rotate(0, 0, Zangle);
+            if (FixSkillcurtime >= FixSkillDelay)
+            {
+                yield return WaitPressFixSkillKey;
+                print("Fix Skill");
+
+                FixSkillImage.StartFill(FixSkillDelay);
+                Hp += HealHp * GameManager.StageMultiplier;
+                FixSkillcurtime = 0;
+            }
+            else
+            {
+                if (Input.GetKeyDown(KeyCode.X))
+                {
+                    WarningText.SetActive(true);
+                    SoundManager.Instance.PlayWarningSound();
+                }
+                FixSkillcurtime += Time.deltaTime;
+            }
+
             yield return null;
         }
+    }
 
-        yield return new WaitForSeconds(10f);
+    IEnumerator EBoomSkill()
+    {
+        while (true)
+        {
+            if (BoomSkillCurtime >= BoomSkillDelay)
+            {
+                yield return WaitPressBoomSkillKey;
+                print("Boom Skill");
+
+                var hits = Physics.SphereCastAll(transform.position, 25f, Vector3.up);
+
+                foreach (var hit in hits)
+                {
+                    print(hit.rigidbody.name);
+                    if (hit.rigidbody.TryGetComponent(out BasicEnemy enemy))
+                    {
+                        print("Enemy hit");
+                        enemy.Hp -= BoomSkillDamage * GameManager.StageMultiplier;
+                    }
+                    else if (hit.rigidbody.TryGetComponent(out Bullet bullet) && bullet.IsShootByPlayer == false)
+                    {
+                        Destroy(bullet.gameObject);
+                    }
+
+                }
+
+                BoomSkillImage.StartFill(BoomSkillDelay);
+                BoomSkillCurtime = 0;
+            }
+            else
+            {
+                if (Input.GetKeyDown(KeyCode.C))
+                {
+                    WarningText.SetActive(true);
+                    SoundManager.Instance.PlayWarningSound(); 
+                }
+                BoomSkillCurtime += Time.deltaTime;
+            }
+
+            yield return null;
+        }
+    }
+
+    IEnumerator ESlowEnemyBulletSkill()
+    {
+        while (true)
+        {
+            if (SlowBulletSkillCurtime >= SlowBulletSkillDelay)
+            {
+                yield return WaitPressSlowBulletSkillKey;
+                print("Slow Bullet Skill");
+
+                Utility.EnemyBulletScaledTime = SlowScale;
+                yield return BackOriginalSpeedDelay;
+                Utility.EnemyBulletScaledTime = 1f;
+
+                SlowEnemyBulletSkillImage.StartFill(SlowBulletSkillDelay);
+
+                SlowBulletSkillCurtime = 0f;
+            }
+            else
+            {
+                if (Input.GetKeyDown(KeyCode.LeftShift))
+                {
+                    WarningText.SetActive(true);
+                    SoundManager.Instance.PlayWarningSound();
+                }
+                SlowBulletSkillCurtime += Time.deltaTime;
+            }
+
+            yield return null;
+        }
+    }
+
+
+    public void PowerUp()
+    {
+        if (powerupCount < MAX_POWERUP)
+        {
+            // ³ªÁß¿¡ ÀÌÆåÆ®
+            Damage += 4f;
+
+            powerupCount++;
+        }
+    }
+
+    public void Invisible()
+    {
+        curInvisibleTime = 0;
+
+        if (IsInvisible)
+            return;
+
+        IsInvisible = true;
+
+        StartCoroutine(EInvisibleCountDown());
+    }
+
+    private IEnumerator EInvisibleCountDown()
+    {
+        while (true)
+        {
+            if (curInvisibleTime >= InvisibleTime)
+            {
+                IsInvisible = false;
+                curInvisibleTime = 0;
+                yield break;
+            }
+            else
+                curInvisibleTime += Time.deltaTime;
+
+            yield return null;
+        }
     }
 
     private void Reset()
     {
-        speed = 10f;
+        Speed = 15f;
+        hp = MaxHp;
+
+
+        IsDie = false;
+        ComingBoss = false;
+
+        Damage = 6f;
+        BoomSkillDamage = 30f;
+        SlowScale = 0.5f;
+        HealHp = 15f;
     }
 }
