@@ -48,7 +48,7 @@ public class SpawnManager : Singleton<SpawnManager>
         AlreadyBossSpawn = true;
         StopCoroutine(EnemySpawnCoroutine);
 
-        Instantiate(Boss[GameManager.StageNum], new Vector3(0, 0, 30f), Quaternion.Euler(90, 0, 0));
+        Instantiate(Boss[GameManager.StageNum - 1], new Vector3(0, 0, 30f), Quaternion.Euler(90, 0, 0));
     }
 
     IEnumerator EStoneSpawn()

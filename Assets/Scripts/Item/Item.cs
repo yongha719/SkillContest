@@ -8,7 +8,7 @@ public abstract class Item : MonoBehaviour
 
     void Update()
     {
-        transform.Translate(Vector3.up * 6 * Time.deltaTime);
+        transform.Translate(Vector3.back * 8 * Time.deltaTime, Space.World);
     }
 
     protected abstract void ItemEffect(Player player);

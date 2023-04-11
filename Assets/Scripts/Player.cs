@@ -265,7 +265,6 @@ public class Player : MonoBehaviour
             if (SlowBulletSkillCurtime >= SlowBulletSkillDelay)
             {
                 yield return WaitPressSlowBulletSkillKey;
-                print("Slow Bullet Skill");
 
                 Utility.EnemyBulletScaledTime = SlowScale;
                 yield return BackOriginalSpeedDelay;

@@ -5,6 +5,8 @@ using System.Diagnostics;
 using TMPro;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEditor;
+using Unity.VisualScripting;
 
 public class GameManager : Singleton<GameManager>
 {
@@ -73,6 +75,7 @@ public class GameManager : Singleton<GameManager>
         if (SceneManager.GetActiveScene().name != "Title")
         {
             StartCoroutine(EScorePlus());
+            StartCoroutine(EFuelDecrease());
 
             Score = 0;
         }
@@ -112,8 +115,9 @@ public class GameManager : Singleton<GameManager>
 
     public void GameStart()
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("Title");
     }
+
     void OnScorePopup()
     {
         GameObject popup = Instantiate(ScorePopup);
@@ -135,7 +139,9 @@ public class GameManager : Singleton<GameManager>
             Hp = Utility.Player.Hp;
             Fuel = Utility.Player.Fuel;
 
-            SceneManager.LoadScene(++StageNum);
+            SceneManager.LoadScene($"Stage{StageNum + 1}");
+
+            StageNum++;
         }
     }
 
@@ -144,6 +150,17 @@ public class GameManager : Singleton<GameManager>
         foreach (var enemy in EnemyList)
         {
             enemy.SetAttackDelay(enemy.AttackDelay * Utility.EnemyScaledTime);
+        }
+    }
+
+    IEnumerator EFuelDecrease()
+    {
+        var wait = new WaitForSeconds(0.7f);
+
+        while (true)
+        {
+            Fuel -= 0.5f;
+            yield return wait;
         }
     }
 

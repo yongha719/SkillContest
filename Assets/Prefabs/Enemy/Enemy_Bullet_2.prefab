@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 2262061306343512795}
   - component: {fileID: 1661392656642547066}
   - component: {fileID: 2262061306343512794}
-  - component: {fileID: 2262061306343512793}
   - component: {fileID: 2262061306343512792}
+  - component: {fileID: 2262061306343512793}
   m_Layer: 0
   m_Name: Enemy_Bullet_2
   m_TagString: Untagged
@@ -50,7 +50,7 @@ MonoBehaviour:
   IsShootByPlayer: 0
   Speed: 10
   Damage: 0
-  IsBasicShoot: 1
+  IsBasicShoot: 0
 --- !u!212 &2262061306343512794
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -103,6 +103,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!65 &2262061306343512792
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2262061306343512789}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.59999996, y: 0.60000014, z: 0.20000005}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &2262061306343512793
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -119,16 +132,3 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &2262061306343512792
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2262061306343512789}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.59999996, y: 0.60000014, z: 0.20000005}
-  m_Center: {x: 0, y: 0, z: 0}

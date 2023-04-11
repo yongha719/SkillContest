@@ -108,7 +108,7 @@ public abstract class Boss : MonoBehaviour
 
         for (int i = 0; i < 360; i += 13)
         {
-            bullet = Instantiate(CircleBullet, transform.position, Quaternion.Euler(90, 0, 0)).GetComponent<Bullet>();
+            bullet = Instantiate(CircleBullet, transform.position, Quaternion.Euler(90, 0, i)).GetComponent<Bullet>();
             bullet.Damage = Damage;
 
             CircleBullets.Add(bullet.gameObject);
@@ -122,7 +122,7 @@ public abstract class Boss : MonoBehaviour
 
     private IEnumerator ECircleAttackGoToPlayer()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1.5f);
 
         for (int i = 0; i < CircleBullets.Count; i++)
         {
