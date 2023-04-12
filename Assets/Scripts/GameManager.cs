@@ -1,4 +1,4 @@
-using System.Collections;
+Ôªøusing System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Diagnostics;
@@ -34,9 +34,12 @@ public class GameManager : Singleton<GameManager>
         get => isClear;
         set
         {
-            // ∞·∞˙√¢ ∏∏µÈæÓº≠ ∂ÁøÏ±‚
-            OnScorePopup();
             isClear = value;
+            // Í≤∞Í≥ºÏ∞Ω ÎßåÎì§Ïñ¥ÏÑú ÎùÑÏö∞Í∏∞
+            if (isClear)
+            {
+                OnScorePopup();
+            }
         }
     }
 
@@ -44,8 +47,6 @@ public class GameManager : Singleton<GameManager>
     private GameObject ScorePopup;
 
     private TextMeshProUGUI ScorePopupScore;
-    private TextMeshProUGUI ScorePopupTime;
-
 
     public static int StageNum = 1;
     public static float StageMultiplier => StageNum switch
@@ -57,11 +58,6 @@ public class GameManager : Singleton<GameManager>
 
 
     public List<BasicEnemy> EnemyList = new List<BasicEnemy>();
-
-    private List<GameObject> ItemList = new List<GameObject>();
-
-    public float Hp = 100f;
-    public float Fuel = 50f;
 
     protected override void Awake()
     {
@@ -75,9 +71,10 @@ public class GameManager : Singleton<GameManager>
         if (SceneManager.GetActiveScene().name != "Title")
         {
             StartCoroutine(EScorePlus());
-            StartCoroutine(EFuelDecrease());
 
             Score = 0;
+
+            RenderSettings.skybox = stageSkybox[StageNum - 1];
         }
     }
 
@@ -136,9 +133,6 @@ public class GameManager : Singleton<GameManager>
     {
         if (StageNum != 3)
         {
-            Hp = Utility.Player.Hp;
-            Fuel = Utility.Player.Fuel;
-
             SceneManager.LoadScene($"Stage{StageNum + 1}");
 
             StageNum++;
@@ -153,16 +147,6 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    IEnumerator EFuelDecrease()
-    {
-        var wait = new WaitForSeconds(0.7f);
-
-        while (true)
-        {
-            Fuel -= 0.5f;
-            yield return wait;
-        }
-    }
 
     IEnumerator EScorePlus()
     {

@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -122,7 +122,7 @@ public class Player : MonoBehaviour
     private WaitKeyDown WaitPressSlowBulletSkillKey => new WaitKeyDown(KeyCode.LeftShift);
 
     const float MAX_POWERUP = 4f;
-    float powerupCount = 0;
+    float powerupCount = 1;
 
     const float InvisibleTime = 2f;
     float curInvisibleTime = 0;
@@ -136,6 +136,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         StartCoroutine(EBasicAttack());
+        StartCoroutine(EFuelDecrease());
 
         InitSkill();
         SKillsCoroutine();
@@ -165,8 +166,30 @@ public class Player : MonoBehaviour
             yield return AttackDelay;
             yield return WaitPressAttackKey;
 
-            // �Ѿ˹߻�
-            Instantiate(playerBullet, transform.position, playerBullet.transform.rotation);
+            // 총알발사
+            switch (powerupCount)
+            {
+                case 1:
+                    Instantiate(playerBullet, transform.position, playerBullet.transform.rotation);
+                    break;
+                case 2:
+                    Instantiate(playerBullet, transform.position - Vector3.left * 0.5f, playerBullet.transform.rotation);
+                    Instantiate(playerBullet, transform.position - Vector3.right * 0.5f, playerBullet.transform.rotation);
+                    break;
+                case 3:
+                    Instantiate(playerBullet, transform.position, playerBullet.transform.rotation);
+                    Instantiate(playerBullet, transform.position - Vector3.left * 0.8f, playerBullet.transform.rotation);
+                    Instantiate(playerBullet, transform.position - Vector3.right * 0.8f, playerBullet.transform.rotation);
+                    break;
+                case 4:
+                    Instantiate(playerBullet, transform.position - Vector3.left * 0.4f, playerBullet.transform.rotation);
+                    Instantiate(playerBullet, transform.position - Vector3.right * 0.4f, playerBullet.transform.rotation);
+                    Instantiate(playerBullet, transform.position - Vector3.left * 1.2f, playerBullet.transform.rotation);
+                    Instantiate(playerBullet, transform.position - Vector3.right * 1.2f, playerBullet.transform.rotation);
+                    break;
+                default:
+                    throw new System.Exception("야야 이거 문제있는데?");
+            }
             AudioSource.PlayOneShot(ShootSound);
         }
     }
@@ -249,7 +272,7 @@ public class Player : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.C))
                 {
                     WarningText.SetActive(true);
-                    SoundManager.Instance.PlayWarningSound(); 
+                    SoundManager.Instance.PlayWarningSound();
                 }
                 BoomSkillCurtime += Time.deltaTime;
             }
@@ -293,7 +316,7 @@ public class Player : MonoBehaviour
     {
         if (powerupCount < MAX_POWERUP)
         {
-            // ���߿� ����Ʈ
+            // 나중에 이펙트
             Damage += 4f;
 
             powerupCount++;
@@ -326,6 +349,18 @@ public class Player : MonoBehaviour
                 curInvisibleTime += Time.deltaTime;
 
             yield return null;
+        }
+    }
+
+
+    IEnumerator EFuelDecrease()
+    {
+        var wait = new WaitForSeconds(0.7f);
+
+        while (true)
+        {
+            Fuel -= 0.5f;
+            yield return wait;
         }
     }
 

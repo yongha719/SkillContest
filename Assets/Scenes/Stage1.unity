@@ -2470,8 +2470,6 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 11334e95622c10e44b0d97a3b90c35e9, type: 2}
   ScorePopup: {fileID: 8059190011113464433, guid: 87b7a85e772864e448a22b2c2c38e4ab, type: 3}
   EnemyList: []
-  Hp: 100
-  Fuel: 50
 --- !u!1 &1200468300
 GameObject:
   m_ObjectHideFlags: 0

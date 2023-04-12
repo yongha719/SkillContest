@@ -12,7 +12,7 @@ public abstract class Boss : MonoBehaviour
 
         set
         {
-            if (value <= 0)
+            if (value <= 0 && GameManager.Instance.IsClear == false)
             {
                 GameManager.Instance.IsClear = true;
             }

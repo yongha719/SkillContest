@@ -1,6 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
 public class WaitKeyDown : CustomYieldInstruction
@@ -12,5 +10,5 @@ public class WaitKeyDown : CustomYieldInstruction
         key = keyCode;
     }
 
-    public override bool keepWaiting => Input.GetKeyDown(key) == false || Input.GetKey(key) == false;
+    public override bool keepWaiting => Input.GetKey(key) == false && Input.GetKeyDown(key) == false;
 }
