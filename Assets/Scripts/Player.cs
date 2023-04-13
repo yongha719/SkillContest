@@ -76,6 +76,9 @@ public class Player : MonoBehaviour
 
     [SerializeField]
     private GameObject playerBullet;
+    [SerializeField]
+    private GameObject BoomPrefab;
+
 
     [SerializeField]
     private Slider hpSlider;
@@ -247,22 +250,26 @@ public class Player : MonoBehaviour
                 yield return WaitPressBoomSkillKey;
                 print("Boom Skill");
 
-                var hits = Physics.SphereCastAll(transform.position, 25f, Vector3.up);
+                BoomPrefab.SetActive(true);
 
-                foreach (var hit in hits)
-                {
-                    print(hit.rigidbody.name);
-                    if (hit.rigidbody.TryGetComponent(out BasicEnemy enemy))
-                    {
-                        print("Enemy hit");
-                        enemy.Hp -= BoomSkillDamage * GameManager.StageMultiplier;
-                    }
-                    else if (hit.rigidbody.TryGetComponent(out Bullet bullet) && bullet.IsShootByPlayer == false)
-                    {
-                        Destroy(bullet.gameObject);
-                    }
+                yield return new WaitForSeconds(0.2f);
 
-                }
+                BoomPrefab.SetActive(false);
+                //var hits = Physics.SphereCastAll(transform.position, 10f, Vector3.up);
+
+                //foreach (var hit in hits)
+                //{
+                //    if (hit.rigidbody.TryGetComponent(out BasicEnemy enemy))
+                //    {
+                //        print("Enemy hit");
+                //        //enemy.Hp -= BoomSkillDamage * GameManager.StageMultiplier;
+                //    }
+                //    else if (hit.rigidbody.TryGetComponent(out Bullet bullet) && bullet.IsShootByPlayer == false)
+                //    {
+                //        Destroy(bullet.gameObject);
+                //    }
+
+                //}
 
                 BoomSkillImage.StartFill(BoomSkillDelay);
                 BoomSkillCurtime = 0;
@@ -289,13 +296,14 @@ public class Player : MonoBehaviour
             {
                 yield return WaitPressSlowBulletSkillKey;
 
+                SlowBulletSkillCurtime = 0f;
+                SlowEnemyBulletSkillImage.StartFill(SlowBulletSkillDelay);
+                print("이거 왜 이래");
+
+
                 Utility.EnemyBulletScaledTime = SlowScale;
                 yield return BackOriginalSpeedDelay;
                 Utility.EnemyBulletScaledTime = 1f;
-
-                SlowEnemyBulletSkillImage.StartFill(SlowBulletSkillDelay);
-
-                SlowBulletSkillCurtime = 0f;
             }
             else
             {

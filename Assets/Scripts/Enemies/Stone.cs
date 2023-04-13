@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Stone : MonoBehaviour
 {
+    private bool IsVisible;
+
     private void Update()
     {
         transform.Translate(Vector3.back * 8 * Time.deltaTime, Space.World);
@@ -15,4 +17,14 @@ public class Stone : MonoBehaviour
             Destroy(bullet.gameObject);
     }
 
+    private void OnBecameVisible()
+    {
+        IsVisible = true;
+    }
+
+    private void OnBecameInvisible()
+    {
+        if (IsVisible)
+            Destroy(gameObject);
+    }
 }

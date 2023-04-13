@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public abstract class Boss : MonoBehaviour
 {
@@ -27,8 +28,11 @@ public abstract class Boss : MonoBehaviour
     [SerializeField]
     protected GameObject CircleBullet;
 
+    [SerializeField]
+    private GameObject BossHpCanvas;
+    private Slider HpSlider;  
+
     private SpriteRenderer SpriteRenderer;
-    private Color OrignalColor;
     private float H;
     private float S;
     private float V;
@@ -51,6 +55,10 @@ public abstract class Boss : MonoBehaviour
         Move();
 
         Color.RGBToHSV(SpriteRenderer.color, out H, out S, out V);
+
+        HpSlider = Instantiate(BossHpCanvas).GetComponentInChildren<Slider>();
+        HpSlider.maxValue = Hp;
+        HpSlider.onValueChanged.AddListener((value) => value = Hp);
     }
 
     private void Move()
